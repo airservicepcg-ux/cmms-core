@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Work Order</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f8;
+margin:0;
+}
+
+.header{
+background:#2c5aa0;
+color:white;
+padding:18px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.container{
+max-width:700px;
+margin:30px auto;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-top:15px;
+}
+
+input, select, textarea{
+width:100%;
+padding:10px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:14px;
+}
+
+textarea{
+resize:vertical;
+}
+
+.qr-btn{
+margin-top:8px;
+background:#ddd;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.photo-btn{
+margin-top:10px;
+background:#4CAF50;
+color:white;
+border:none;
+padding:12px;
+border-radius:6px;
+width:100%;
+font-size:16px;
+cursor:pointer;
+}
+
+.submit-btn{
+margin-top:20px;
+background:#2c5aa0;
+color:white;
+border:none;
+padding:14px;
+border-radius:6px;
+width:100%;
+font-size:16px;
+cursor:pointer;
+}
+
+.back{
+margin-top:20px;
+display:block;
+text-align:center;
+text-decoration:none;
+color:#333;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+Create Work Order
+</div>
+
+<div class="container">
+
+<form id="workForm">
+
+<label>Asset ID</label>
+
+<select name="asset">
+
+<option>-- Select Asset --</option>
+<option>PUMP-001</option>
+<option>PUMP-002</option>
+<option>AHU-01</option>
+
+</select>
+
+<button type="button" class="qr-btn">
+Scan Asset QR
+</button>
+
+
+<label>Location</label>
+
+<select name="location">
+
+<option>-- Select Location --</option>
+<option>Production Line 1</option>
+<option>Production Line 2</option>
+<option>Pump Room</option>
+<option>AHU Room</option>
+<option>Boiler Room</option>
+
+</select>
+
+
+<label>Problem</label>
+
+<textarea name="problem" rows="4"></textarea>
+
+
+<label>Priority</label>
+
+<select name="priority">
+
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+<option>Critical</option>
+
+</select>
+
+
+<label>Owner</label>
+
+<select name="owner">
+
+<option>-- Select Owner --</option>
+<option>Production</option>
+<option>Maintenance</option>
+<option>Utility</option>
+
+</select>
+
+
+<label>Owner Name</label>
+
+<input type="text" name="ownername">
+
+
+<label>Email</label>
+
+<input type="email" name="email">
+
+
+<label>Phone</label>
+
+<input type="text" name="phone">
+
+
+<label>Photo</label>
+
+<button type="button" class="photo-btn">
+📷 Take Photo
+</button>
+
+<div style="margin-top:5px;color:#666;">
+0 / 4
+</div>
+
+
+<button type="submit" class="submit-btn">
+Submit
+</button>
+
+</form>
+
+
+<a class="back" href="../index.html">
+⬅ Back to Home
+</a>
+
+</div>
+
+
+<script>
+
+document.getElementById("workForm").addEventListener("submit", function(e){
+
+e.preventDefault()
+
+const formData = new FormData(this)
+
+fetch("YOUR_GAS_WEBAPP_URL",{
+
+method:"POST",
+body:formData
+
+})
+
+.then(res=>res.text())
+.then(data=>{
+
+alert("Work Order Submitted")
+
+document.getElementById("workForm").reset()
+
+})
+
+})
+
+</script>
+
+
+</body>
+</html>
