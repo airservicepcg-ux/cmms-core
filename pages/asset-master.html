@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta charset="UTF-8">
-
 <title>Asset Master</title>
 
 <style>
@@ -130,24 +127,24 @@ onkeyup="searchAsset()"
 
 <script>
 
-console.log("CMMS SCRIPT START")
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets"
-
 let assets = []
 
-async function loadAssets(){
+function loadAssets(){
 
-console.log("Loading assets...")
+const script = document.createElement("script")
 
-const response = await fetch(API_URL)
+script.src =
+"https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets&callback=showAssets"
 
-assets = await response.json()
+document.body.appendChild(script)
 
-console.log("Assets:",assets)
+}
 
-renderTable(assets)
+function showAssets(data){
+
+assets = data
+
+renderTable(data)
 
 }
 
