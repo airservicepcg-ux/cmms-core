@@ -1,237 +1,206 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Create Work Order</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f4f6f8;
+background:#f4f6f9;
 margin:0;
 }
 
 .header{
-background:#2c5aa0;
+background:#2f5597;
 color:white;
-padding:18px;
 text-align:center;
+padding:15px;
 font-size:22px;
 font-weight:bold;
 }
 
 .container{
-max-width:700px;
-margin:30px auto;
+width:420px;
+margin:40px auto;
 background:white;
-padding:30px;
+padding:25px;
 border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
 label{
 font-weight:bold;
-display:block;
-margin-top:15px;
-}
-
-input, select, textarea{
-width:100%;
-padding:10px;
-margin-top:6px;
-border:1px solid #ccc;
-border-radius:6px;
 font-size:14px;
 }
 
+select, textarea{
+width:100%;
+padding:8px;
+margin-top:5px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
 textarea{
-resize:vertical;
+height:80px;
 }
 
-.qr-btn{
-margin-top:8px;
-background:#ddd;
-border:none;
-padding:8px 12px;
+.asset-info{
+background:#f3f3f3;
+padding:10px;
 border-radius:6px;
-cursor:pointer;
+font-size:13px;
+margin-bottom:15px;
 }
 
-.photo-btn{
-margin-top:10px;
-background:#4CAF50;
-color:white;
-border:none;
-padding:12px;
-border-radius:6px;
-width:100%;
-font-size:16px;
-cursor:pointer;
-}
-
-.submit-btn{
-margin-top:20px;
-background:#2c5aa0;
-color:white;
-border:none;
-padding:14px;
-border-radius:6px;
-width:100%;
-font-size:16px;
-cursor:pointer;
-}
-
-.back{
-margin-top:20px;
-display:block;
+.loading{
 text-align:center;
-text-decoration:none;
-color:#333;
+color:#666;
+font-size:13px;
+margin-bottom:10px;
+}
+
+button{
+background:#2f5597;
+color:white;
+border:none;
+padding:10px;
+width:100%;
+border-radius:6px;
+cursor:pointer;
 }
 
 </style>
 
 </head>
 
+
+
 <body>
+
 
 <div class="header">
 Create Work Order
 </div>
 
-<div class="container">
 
-<form id="workForm">
+<div class="container">
 
 <label>Asset ID</label>
 
-<select name="asset">
-
-<option>-- Select Asset --</option>
-<option>PUMP-001</option>
-<option>PUMP-002</option>
-<option>AHU-01</option>
-
+<select id="assetSelect" onchange="showAssetDetail()">
+<option>Loading Asset List...</option>
 </select>
 
-<button type="button" class="qr-btn">
-Scan Asset QR
-</button>
+<div id="loadingAsset" class="loading">
+กำลังโหลดรายการเครื่องจักร...
+</div>
 
+<div id="assetInfo" class="asset-info" style="display:none"></div>
 
-<label>Location</label>
-
-<select name="location">
-
-<option>-- Select Location --</option>
-<option>Production Line 1</option>
-<option>Production Line 2</option>
-<option>Pump Room</option>
-<option>AHU Room</option>
-<option>Boiler Room</option>
-
-</select>
 
 
 <label>Problem</label>
-
-<textarea name="problem" rows="4"></textarea>
+<textarea id="problem"></textarea>
 
 
 <label>Priority</label>
 
-<select name="priority">
-
+<select>
 <option>Low</option>
 <option>Medium</option>
 <option>High</option>
 <option>Critical</option>
-
 </select>
 
 
-<label>Owner</label>
-
-<select name="owner">
-
-<option>-- Select Owner --</option>
-<option>Production</option>
-<option>Maintenance</option>
-<option>Utility</option>
-
-</select>
-
-
-<label>Owner Name</label>
-
-<input type="text" name="ownername">
-
-
-<label>Email</label>
-
-<input type="email" name="email">
-
-
-<label>Phone</label>
-
-<input type="text" name="phone">
-
-
-<label>Photo</label>
-
-<button type="button" class="photo-btn">
-📷 Take Photo
-</button>
-
-<div style="margin-top:5px;color:#666;">
-0 / 4
-</div>
-
-
-<button type="submit" class="submit-btn">
-Submit
-</button>
-
-</form>
-
-
-<a class="back" href="../index.html">
-⬅ Back to Home
-</a>
+<button>Submit Work Order</button>
 
 </div>
+
 
 
 <script>
 
-document.getElementById("workForm").addEventListener("submit", function(e){
 
-e.preventDefault()
+const API_URL =
+"https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets&callback=loadAssetList"
 
-const formData = new FormData(this)
 
-fetch("YOUR_GAS_WEBAPP_URL",{
+let assets = []
 
-method:"POST",
-body:formData
+
+function loadAssets(){
+
+const script = document.createElement("script")
+
+script.src = API_URL
+
+document.body.appendChild(script)
+
+}
+
+
+function loadAssetList(data){
+
+assets = data
+
+const select = document.getElementById("assetSelect")
+
+select.innerHTML = "<option value=''>-- Select Asset --</option>"
+
+
+data.forEach(asset =>{
+
+const option = document.createElement("option")
+
+option.value = asset.asset_id
+option.text = asset.asset_id
+
+select.appendChild(option)
 
 })
 
-.then(res=>res.text())
-.then(data=>{
 
-alert("Work Order Submitted")
+document.getElementById("loadingAsset").style.display="none"
 
-document.getElementById("workForm").reset()
+}
 
-})
 
-})
+
+function showAssetDetail(){
+
+const assetId = document.getElementById("assetSelect").value
+
+if(assetId=="") return
+
+
+const asset = assets.find(a => a.asset_id === assetId)
+
+const box = document.getElementById("assetInfo")
+
+box.style.display="block"
+
+box.innerHTML =
+
+`
+<b>ชื่อเครื่อง:</b> ${asset.asset_name}<br>
+<b>Location:</b> ${asset.location}<br>
+<b>Status:</b> ${asset.status}<br>
+<b>Model:</b> ${asset.model}<br>
+<b>Cooling BTU:</b> ${asset.btu}
+`
+
+}
+
+
+
+window.onload = loadAssets
+
 
 </script>
 
