@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <title>Asset Master</title>
@@ -38,6 +39,7 @@ padding:8px;
 width:250px;
 border:1px solid #ccc;
 border-radius:5px;
+font-size:14px;
 }
 
 .add-btn{
@@ -47,6 +49,11 @@ border:none;
 padding:10px 15px;
 border-radius:5px;
 cursor:pointer;
+font-size:14px;
+}
+
+.add-btn:hover{
+background:#218838;
 }
 
 table{
@@ -59,11 +66,17 @@ th{
 background:#2f5597;
 color:white;
 padding:10px;
+font-size:14px;
 }
 
 td{
 padding:8px;
 border-bottom:1px solid #ddd;
+font-size:13px;
+}
+
+tr:hover{
+background:#f1f1f1;
 }
 
 .action-btn{
@@ -73,6 +86,23 @@ border:none;
 padding:5px 10px;
 border-radius:4px;
 cursor:pointer;
+}
+
+.action-btn:hover{
+background:#0056b3;
+}
+
+.loading{
+text-align:center;
+padding:25px;
+font-size:16px;
+color:#666;
+}
+
+.no-data{
+text-align:center;
+padding:20px;
+color:#888;
 }
 
 </style>
@@ -91,7 +121,7 @@ Asset Master
 
 <input
 type="text"
-id="search"
+id="searchBox"
 class="search"
 placeholder="Search Asset"
 onkeyup="searchAsset()"
@@ -106,6 +136,7 @@ onkeyup="searchAsset()"
 <table>
 
 <thead>
+
 <tr>
 <th>Asset ID</th>
 <th>Asset Name</th>
@@ -116,9 +147,17 @@ onkeyup="searchAsset()"
 <th>BTU</th>
 <th>Action</th>
 </tr>
+
 </thead>
 
 <tbody id="assetTable">
+
+<tr>
+<td colspan="8" class="loading">
+Loading Asset Data...
+</td>
+</tr>
+
 </tbody>
 
 </table>
@@ -127,14 +166,16 @@ onkeyup="searchAsset()"
 
 <script>
 
+const API_URL =
+"https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets&callback=showAssets"
+
 let assets = []
 
 function loadAssets(){
 
 const script = document.createElement("script")
 
-script.src =
-"https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets&callback=showAssets"
+script.src = API_URL
 
 document.body.appendChild(script)
 
@@ -154,6 +195,15 @@ const table = document.getElementById("assetTable")
 
 table.innerHTML=""
 
+if(data.length === 0){
+
+table.innerHTML =
+"<tr><td colspan='8' class='no-data'>No Asset Found</td></tr>"
+
+return
+
+}
+
 data.forEach(asset=>{
 
 const row =
@@ -165,7 +215,7 @@ const row =
 "<td>"+asset.manufacturer+"</td>"+
 "<td>"+asset.model+"</td>"+
 "<td>"+asset.btu+"</td>"+
-"<td><button class='action-btn'>View</button></td>"+
+"<td><button class='action-btn' onclick=\"viewAsset('"+asset.asset_id+"')\">View</button></td>"+
 "</tr>"
 
 table.innerHTML += row
@@ -177,17 +227,24 @@ table.innerHTML += row
 function searchAsset(){
 
 const keyword =
-document.getElementById("search").value.toLowerCase()
+document.getElementById("searchBox").value.toLowerCase()
 
-const filtered = assets.filter(a=>
+const filtered = assets.filter(a =>
 
 a.asset_id.toLowerCase().includes(keyword) ||
 a.asset_name.toLowerCase().includes(keyword) ||
-a.location.toLowerCase().includes(keyword)
+a.location.toLowerCase().includes(keyword) ||
+a.model.toLowerCase().includes(keyword)
 
 )
 
 renderTable(filtered)
+
+}
+
+function viewAsset(assetId){
+
+alert("Open Asset Detail for : " + assetId)
 
 }
 
