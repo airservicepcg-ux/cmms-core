@@ -109,7 +109,6 @@ onkeyup="searchAsset()"
 <table>
 
 <thead>
-
 <tr>
 <th>Asset ID</th>
 <th>Asset Name</th>
@@ -120,11 +119,9 @@ onkeyup="searchAsset()"
 <th>BTU</th>
 <th>Action</th>
 </tr>
-
 </thead>
 
 <tbody id="assetTable">
-
 </tbody>
 
 </table>
@@ -133,6 +130,8 @@ onkeyup="searchAsset()"
 
 <script>
 
+console.log("CMMS SCRIPT START")
+
 const API_URL =
 "https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets"
 
@@ -140,19 +139,15 @@ let assets = []
 
 async function loadAssets(){
 
-try{
+console.log("Loading assets...")
 
 const response = await fetch(API_URL)
 
 assets = await response.json()
 
+console.log("Assets:",assets)
+
 renderTable(assets)
-
-}catch(error){
-
-console.log(error)
-
-}
 
 }
 
@@ -204,5 +199,4 @@ window.onload = loadAssets
 </script>
 
 </body>
-
 </html>
