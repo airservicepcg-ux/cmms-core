@@ -1,3 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Asset Master</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6f9;
+margin:0;
+}
+
+.header{
+background:#2f5597;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.container{
+width:95%;
+margin:auto;
+margin-top:30px;
+}
+
+.toolbar{
+display:flex;
+justify-content:space-between;
+margin-bottom:15px;
+}
+
+.search{
+padding:8px;
+width:250px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+.add-btn{
+background:#28a745;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:5px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th{
+background:#2f5597;
+color:white;
+padding:10px;
+font-size:14px;
+}
+
+td{
+padding:8px;
+border-bottom:1px solid #ddd;
+font-size:13px;
+}
+
+.action-btn{
+background:#007bff;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:4px;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+Asset Master
+</div>
+
+<div class="container">
+
+<div class="toolbar">
+
+<input
+type="text"
+id="search"
+class="search"
+placeholder="Search Asset"
+onkeyup="searchAsset()"
+>
+
+<button class="add-btn">
++ Add Asset
+</button>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Asset ID</th>
+<th>Asset Name</th>
+<th>Location</th>
+<th>Status</th>
+<th>Manufacturer</th>
+<th>Model</th>
+<th>BTU</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="assetTable">
+
+</tbody>
+
+</table>
+
+</div>
+
 <script>
 
 const API_URL =
@@ -15,8 +146,6 @@ mode:"cors"
 })
 
 assets = await response.json()
-
-console.log("Assets Loaded:",assets)
 
 renderTable(assets)
 
@@ -79,10 +208,13 @@ renderTable(filtered)
 
 function viewAsset(id){
 
-alert("Asset : "+id)
+alert("View Asset : "+id)
 
 }
 
 window.onload = loadAssets
 
 </script>
+
+</body>
+</html>
