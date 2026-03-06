@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CMMS Maintenance System</title>
+<title>CMMS – Maintenance System</title>
 
 <style>
 
@@ -17,36 +17,50 @@ margin:0;
 text-align:center;
 }
 
+/* Header */
+
 .header{
-background:#1f4ea3;
+background:#2c5aa0;
 color:white;
-padding:20px;
+padding:22px;
 font-size:24px;
 font-weight:bold;
 }
 
+/* Menu Grid */
+
 .container{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:25px;
-padding:40px;
-max-width:900px;
+gap:30px;
+padding:50px;
+max-width:1000px;
 margin:auto;
 }
+
+/* Card Button */
 
 .card{
 background:white;
 padding:40px;
 border-radius:12px;
-box-shadow:0 6px 12px rgba(0,0,0,0.1);
+box-shadow:0 6px 12px rgba(0,0,0,0.15);
 font-size:18px;
 font-weight:bold;
-color:#1f4ea3;
+color:#2c5aa0;
 text-decoration:none;
+transition:0.2s;
 }
 
 .card:hover{
 transform:translateY(-5px);
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+.footer{
+margin-top:30px;
+color:#666;
+font-size:14px;
 }
 
 </style>
@@ -62,31 +76,34 @@ transform:translateY(-5px);
 <div class="container">
 
 <a class="card" href="pages/create-workorder.html">
-Create Work Order
+🔧 Create Work Order
 </a>
 
 <a class="card" href="pages/job-status.html">
-Job Status
+📋 Job Status
 </a>
 
 <a class="card" href="pages/technician.html">
-Technician Action
+▶ Technician Action
 </a>
 
 <a class="card" href="pages/asset-master.html">
-Asset Master
+⚙ Asset Master
 </a>
 
 <a class="card" href="pages/dashboard-kpi.html">
-Dashboard KPI
+📊 Dashboard KPI
 </a>
 
 <a class="card" href="pages/document-support.html">
-Document Support
+📁 Document Support
 </a>
 
 </div>
 
+<div class="footer">
+CMMS | Powered by Google Sheets & Apps Script
+</div>
 
 </body>
 </html>
