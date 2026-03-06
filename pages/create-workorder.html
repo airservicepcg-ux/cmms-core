@@ -16,7 +16,7 @@ margin:0;
 .header{
 background:#3b5c97;
 color:white;
-padding:15px;
+padding:16px;
 text-align:center;
 font-size:22px;
 font-weight:bold;
@@ -69,6 +69,11 @@ color:#555;
 margin-bottom:10px;
 }
 
+.error{
+color:red;
+text-align:center;
+}
+
 </style>
 
 </head>
@@ -85,6 +90,8 @@ Create Work Order
 กำลังโหลดข้อมูลเครื่องจักร...
 </div>
 
+<div class="error" id="error"></div>
+
 <label>Asset ID</label>
 
 <select id="assetSelect" onchange="showAssetDetail()">
@@ -92,9 +99,7 @@ Create Work Order
 </select>
 
 <div class="assetInfo" id="assetInfo">
-
 เลือก Asset เพื่อดูรายละเอียด
-
 </div>
 
 <label>Line</label>
@@ -145,12 +150,6 @@ Create Work Order
 <label>Phone</label>
 <input id="phone">
 
-<label>Photo 1</label>
-<input type="file" id="photo1">
-
-<label>Photo 2</label>
-<input type="file" id="photo2">
-
 <button onclick="submitWO()">Submit Work Order</button>
 
 </div>
@@ -160,39 +159,58 @@ Create Work Order
 const API_URL =
 "https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
 
-let assetData=[]
-
+let assetData = []
 
 async function loadAssets(){
 
-const res =
-await fetch(API_URL+"?type=assets")
+document.getElementById("loading").innerHTML =
+"กำลังโหลดข้อมูลเครื่องจักร..."
+
+try{
+
+const response =
+await fetch(API_URL + "?type=assets")
 
 const data =
-await res.json()
+await response.json()
 
 assetData = data
 
 const select =
 document.getElementById("assetSelect")
 
-data.forEach(a=>{
+data.forEach(asset=>{
 
-const option =
+let option =
 document.createElement("option")
 
-option.value = a.asset_id
+option.value =
+asset.asset_id
 
 option.text =
-a.asset_id
+asset.asset_id
 
 select.appendChild(option)
 
 })
 
-document.getElementById("loading").innerHTML=""
+document.getElementById("loading").innerHTML =
+""
 
 }
+catch(error){
+
+document.getElementById("loading").innerHTML = ""
+
+document.getElementById("error").innerHTML =
+"❌ โหลด Asset ไม่ได้"
+
+console.log(error)
+
+}
+
+}
+
 
 
 function showAssetDetail(){
@@ -205,7 +223,7 @@ assetData.find(a=>a.asset_id==id)
 
 if(!asset) return
 
-document.getElementById("assetInfo").innerHTML=
+document.getElementById("assetInfo").innerHTML =
 
 `
 <b>Asset Name :</b> ${asset.asset_name}<br>
@@ -217,6 +235,7 @@ document.getElementById("assetInfo").innerHTML=
 }
 
 
+
 async function submitWO(){
 
 const id =
@@ -225,7 +244,15 @@ document.getElementById("assetSelect").value
 const asset =
 assetData.find(a=>a.asset_id==id)
 
-const data = {
+if(!asset){
+
+alert("กรุณาเลือก Asset")
+
+return
+
+}
+
+const payload = {
 
 asset_id:asset.asset_id,
 asset_name:asset.asset_name,
@@ -256,15 +283,12 @@ document.getElementById("phone").value
 
 }
 
-
 await fetch(API_URL,{
-
 method:"POST",
-body:JSON.stringify(data)
-
+body:JSON.stringify(payload)
 })
 
-alert("Work Order Created Successfully")
+alert("Work Order Created")
 
 location.reload()
 
