@@ -2,8 +2,9 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
-<title>Asset Master</title>
+<title>CMMS - Asset Master</title>
 
 <style>
 
@@ -12,6 +13,22 @@ font-family:Arial;
 background:#f4f6f9;
 margin:0;
 }
+
+/* NAVBAR */
+
+.navbar{
+background:#1f3c6e;
+padding:12px;
+}
+
+.navbar a{
+color:white;
+margin-right:25px;
+text-decoration:none;
+font-weight:bold;
+}
+
+/* HEADER */
 
 .header{
 background:#2f5597;
@@ -22,11 +39,15 @@ font-size:22px;
 font-weight:bold;
 }
 
+/* CONTAINER */
+
 .container{
 width:95%;
 margin:auto;
 margin-top:30px;
 }
+
+/* TOOLBAR */
 
 .toolbar{
 display:flex;
@@ -56,6 +77,8 @@ font-size:14px;
 background:#218838;
 }
 
+/* TABLE */
+
 table{
 width:100%;
 border-collapse:collapse;
@@ -79,6 +102,8 @@ tr:hover{
 background:#f1f1f1;
 }
 
+/* BUTTON */
+
 .action-btn{
 background:#007bff;
 color:white;
@@ -92,12 +117,16 @@ cursor:pointer;
 background:#0056b3;
 }
 
+/* LOADING */
+
 .loading{
 text-align:center;
 padding:25px;
 font-size:16px;
 color:#666;
 }
+
+/* NO DATA */
 
 .no-data{
 text-align:center;
@@ -109,13 +138,34 @@ color:#888;
 
 </head>
 
+
 <body>
 
-<div class="header">
-Asset Master
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<a href="../index.html">Home</a>
+
+<a href="asset-master.html">Asset Master</a>
+
+<a href="create-workorder.html">Create Work Order</a>
+
+<a href="job-status.html">Job Status</a>
+
 </div>
 
+
+<div class="header">
+
+Asset Master
+
+</div>
+
+
 <div class="container">
+
 
 <div class="toolbar">
 
@@ -127,11 +177,14 @@ placeholder="Search Asset"
 onkeyup="searchAsset()"
 />
 
-<button class="add-btn">
+<button class="add-btn" onclick="addAsset()">
+
 + Add Asset
+
 </button>
 
 </div>
+
 
 <table>
 
@@ -153,9 +206,13 @@ onkeyup="searchAsset()"
 <tbody id="assetTable">
 
 <tr>
+
 <td colspan="8" class="loading">
+
 Loading Asset Data...
+
 </td>
+
 </tr>
 
 </tbody>
@@ -164,12 +221,20 @@ Loading Asset Data...
 
 </div>
 
+
 <script>
+
+
+/* API URL */
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets&callback=showAssets"
 
+
 let assets = []
+
+
+/* LOAD ASSET */
 
 function loadAssets(){
 
@@ -181,6 +246,9 @@ document.body.appendChild(script)
 
 }
 
+
+/* SHOW ASSET */
+
 function showAssets(data){
 
 assets = data
@@ -188,6 +256,9 @@ assets = data
 renderTable(data)
 
 }
+
+
+/* RENDER TABLE */
 
 function renderTable(data){
 
@@ -224,6 +295,9 @@ table.innerHTML += row
 
 }
 
+
+/* SEARCH */
+
 function searchAsset(){
 
 const keyword =
@@ -242,15 +316,46 @@ renderTable(filtered)
 
 }
 
+
+/* VIEW ASSET */
+
 function viewAsset(assetId){
 
 alert("Open Asset Detail for : " + assetId)
 
 }
 
+
+/* ADD ASSET WITH PASSWORD */
+
+function addAsset(){
+
+const password = prompt("Enter Admin Password")
+
+if(password === "12345678"){
+
+window.open(
+"https://docs.google.com/spreadsheets/d/1FLtadQ57IeghtIYcOxr-1MQ5nw5HT0RWQsWU6cSzxcE/edit",
+"_blank"
+)
+
+}else{
+
+alert("Access Denied")
+
+}
+
+}
+
+
+/* LOAD PAGE */
+
 window.onload = loadAssets
+
 
 </script>
 
+
 </body>
+
 </html>
