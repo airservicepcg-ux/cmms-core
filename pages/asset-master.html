@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
+
 <meta charset="UTF-8">
+
 <title>Asset Master</title>
 
 <style>
 
 body{
-font-family: Arial;
+font-family:Arial;
 background:#f4f6f9;
 margin:0;
 }
@@ -59,13 +62,11 @@ th{
 background:#2f5597;
 color:white;
 padding:10px;
-font-size:14px;
 }
 
 td{
 padding:8px;
 border-bottom:1px solid #ddd;
-font-size:13px;
 }
 
 .action-btn{
@@ -78,6 +79,7 @@ cursor:pointer;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -96,7 +98,7 @@ id="search"
 class="search"
 placeholder="Search Asset"
 onkeyup="searchAsset()"
->
+/>
 
 <button class="add-btn">
 + Add Asset
@@ -140,10 +142,7 @@ async function loadAssets(){
 
 try{
 
-const response = await fetch(API_URL,{
-method:"GET",
-mode:"cors"
-})
+const response = await fetch(API_URL)
 
 assets = await response.json()
 
@@ -151,7 +150,7 @@ renderTable(assets)
 
 }catch(error){
 
-console.error("API Error:",error)
+console.log(error)
 
 }
 
@@ -165,23 +164,17 @@ table.innerHTML=""
 
 data.forEach(asset=>{
 
-const row = `
-<tr>
-<td>${asset.asset_id}</td>
-<td>${asset.asset_name}</td>
-<td>${asset.location}</td>
-<td>${asset.status}</td>
-<td>${asset.manufacturer}</td>
-<td>${asset.model}</td>
-<td>${asset.btu}</td>
-<td>
-<button class="action-btn"
-onclick="viewAsset('${asset.asset_id}')">
-View
-</button>
-</td>
-</tr>
-`
+const row =
+"<tr>"+
+"<td>"+asset.asset_id+"</td>"+
+"<td>"+asset.asset_name+"</td>"+
+"<td>"+asset.location+"</td>"+
+"<td>"+asset.status+"</td>"+
+"<td>"+asset.manufacturer+"</td>"+
+"<td>"+asset.model+"</td>"+
+"<td>"+asset.btu+"</td>"+
+"<td><button class='action-btn'>View</button></td>"+
+"</tr>"
 
 table.innerHTML += row
 
@@ -206,15 +199,10 @@ renderTable(filtered)
 
 }
 
-function viewAsset(id){
-
-alert("View Asset : "+id)
-
-}
-
 window.onload = loadAssets
 
 </script>
 
 </body>
+
 </html>
