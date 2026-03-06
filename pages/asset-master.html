@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <title>CMMS - Asset Master</title>
 
@@ -126,8 +125,6 @@ font-size:16px;
 color:#666;
 }
 
-/* NO DATA */
-
 .no-data{
 text-align:center;
 padding:20px;
@@ -158,9 +155,7 @@ color:#888;
 
 
 <div class="header">
-
 Asset Master
-
 </div>
 
 
@@ -178,9 +173,7 @@ onkeyup="searchAsset()"
 />
 
 <button class="add-btn" onclick="addAsset()">
-
 + Add Asset
-
 </button>
 
 </div>
@@ -206,13 +199,9 @@ onkeyup="searchAsset()"
 <tbody id="assetTable">
 
 <tr>
-
 <td colspan="8" class="loading">
-
 Loading Asset Data...
-
 </td>
-
 </tr>
 
 </tbody>
@@ -222,8 +211,8 @@ Loading Asset Data...
 </div>
 
 
-<script>
 
+<script>
 
 /* API URL */
 
@@ -232,6 +221,7 @@ const API_URL =
 
 
 let assets = []
+
 
 
 /* LOAD ASSET */
@@ -247,6 +237,7 @@ document.body.appendChild(script)
 }
 
 
+
 /* SHOW ASSET */
 
 function showAssets(data){
@@ -256,6 +247,7 @@ assets = data
 renderTable(data)
 
 }
+
 
 
 /* RENDER TABLE */
@@ -296,6 +288,7 @@ table.innerHTML += row
 }
 
 
+
 /* SEARCH */
 
 function searchAsset(){
@@ -317,6 +310,7 @@ renderTable(filtered)
 }
 
 
+
 /* VIEW ASSET */
 
 function viewAsset(assetId){
@@ -326,11 +320,12 @@ alert("Open Asset Detail for : " + assetId)
 }
 
 
-/* ADD ASSET WITH PASSWORD */
+
+/* ADD ASSET */
 
 function addAsset(){
 
-const password = prompt("Enter Admin Password")
+const password = prompt("Admin Only - Enter Password")
 
 if(password === "12345678"){
 
@@ -346,6 +341,7 @@ alert("Access Denied")
 }
 
 }
+
 
 
 /* LOAD PAGE */
