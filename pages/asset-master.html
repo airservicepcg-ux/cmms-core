@@ -102,7 +102,13 @@ Asset Master
 
 <div class="toolbar">
 
-<input type="text" class="search" placeholder="Search Asset">
+<input 
+type="text"
+class="search"
+id="search"
+placeholder="Search Asset"
+onkeyup="searchAsset()"
+>
 
 <button class="add-btn">
 + Add Asset
@@ -127,46 +133,111 @@ Asset Master
 
 </thead>
 
-<tbody>
-
-<tr>
-<td>AC-001</td>
-<td>Air Conditioner 001</td>
-<td>WHA05</td>
-<td>ACTIVE</td>
-<td>Haier</td>
-<td>HSU-18VRA</td>
-<td>18000</td>
-<td><button class="action-btn">View</button></td>
-</tr>
-
-<tr>
-<td>AC-002</td>
-<td>Air Conditioner 002</td>
-<td>WHA05</td>
-<td>ACTIVE</td>
-<td>Haier</td>
-<td>HSU-18VRA</td>
-<td>18000</td>
-<td><button class="action-btn">View</button></td>
-</tr>
-
-<tr>
-<td>AC-003</td>
-<td>Air Conditioner 003</td>
-<td>WHA05</td>
-<td>ACTIVE</td>
-<td>Haier</td>
-<td>HSU-24VRA</td>
-<td>24000</td>
-<td><button class="action-btn">View</button></td>
-</tr>
+<tbody id="assetTable">
 
 </tbody>
 
 </table>
 
 </div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbz7Rwjmjqz9bM_ahaqVrlfmyaY08sMGqXYIynKkIoR3odtO-avHjO8oMpAXwzTjJWqbGw/exec?action=getAssets"
+
+let assets = []
+
+async function loadAssets(){
+
+const response = await fetch(API_URL)
+assets = await response.json()
+
+renderTable(assets)
+
+}
+
+function renderTable(data){
+
+const table = document.getElementById("assetTable")
+
+table.innerHTML = ""
+
+data.forEach(asset => {
+
+const row = `
+<tr>
+
+<td>${asset.asset_id}</td>
+
+<td>${asset.asset_name}</td>
+
+<td>${asset.location}</td>
+
+<td>${asset.status}</td>
+
+<td>${asset.manufacturer}</td>
+
+<td>${asset.model}</td>
+
+<td>${asset.btu}</td>
+
+<td>
+<button class="action-btn"
+onclick="viewAsset('${asset.asset_id}')">
+View
+</button>
+</td>
+
+</tr>
+`
+
+table.innerHTML += row
+
+})
+
+}
+
+function searchAsset(){
+
+const keyword =
+document.getElementById("search")
+.value
+.toLowerCase()
+
+const filtered = assets.filter(a =>
+
+a.asset_id.toLowerCase().includes(keyword) ||
+a.asset_name.toLowerCase().includes(keyword) ||
+a.location.toLowerCase().includes(keyword)
+
+)
+
+renderTable(filtered)
+
+}
+
+function viewAsset(assetID){
+
+/*
+อนาคตจะเปิด PDF หรือ Asset Detail
+เช่น
+
+window.open("asset-detail.html?id="+assetID)
+
+หรือ
+
+window.open("PDF/"+assetID+".pdf")
+
+*/
+
+alert("View Asset : " + assetID)
+
+}
+
+window.onload = loadAssets
+
+</script>
 
 </body>
 </html>
