@@ -1,97 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Work Order</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6f9;
+margin:0;
+padding:0;
+}
+
+.header{
+background:#2c5aa0;
+color:white;
+padding:16px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
+}
+
+.container{
+max-width:600px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+label{
+font-weight:bold;
+margin-top:10px;
+display:block;
+}
+
+select,input,textarea{
+width:100%;
+padding:10px;
+margin-top:5px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+textarea{
+min-height:80px;
+}
+
+button{
+margin-top:20px;
+width:100%;
+padding:14px;
+background:#2c5aa0;
+color:white;
+border:none;
+border-radius:8px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#1f3f73;
+}
+
+.success{
+background:#d4edda;
+padding:12px;
+border-radius:6px;
+margin-top:15px;
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+🔧 Create Work Order
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<label>Asset</label>
+<select id="asset"></select>
+
+<label>Production Line</label>
+<input id="line">
+
+<label>Problem Description</label>
+<textarea id="problem"></textarea>
+
+<label>Priority</label>
+<select id="priority">
+<option>LOW</option>
+<option>MEDIUM</option>
+<option>HIGH</option>
+<option>URGENT</option>
+</select>
+
+<label>Department</label>
+<input id="owner">
+
+<label>Requester Name</label>
+<input id="owner_name">
+
+<label>Email</label>
+<input id="email">
+
+<label>Phone</label>
+<input id="phone">
+
+<button onclick="submitWO()">
+Submit Work Order
+</button>
+
+<div id="success" class="success"></div>
+
+</div>
+</div>
+
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
+const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
 
-const el = id => document.getElementById(id)
-
-let assets = []
-
-/* โหลด asset */
+let assets=[]
 
 async function loadAssets(){
 
-try{
+const res=await fetch(API_URL+"?type=assets")
+assets=await res.json()
 
-const res = await fetch(API_URL + "?type=assets")
+const select=document.getElementById("asset")
 
-const data = await res.json()
+assets.forEach(a=>{
 
-assets = data
+const opt=document.createElement("option")
 
-const select = el("asset_id")
+opt.value=a.asset_id
+opt.text=a.asset_id+" - "+a.asset_name
 
-select.innerHTML = `<option value="">-- Select Asset --</option>`
-
-data.forEach(a=>{
-
-const option = document.createElement("option")
-
-option.value = a.asset_id
-option.textContent = a.asset_id
-
-select.appendChild(option)
+select.appendChild(opt)
 
 })
 
-}catch(err){
-
-console.error(err)
-
-document.getElementById("status").innerHTML = "❌ โหลด Asset ไม่ได้"
-
 }
-
-}
-
-/* แสดงรายละเอียด asset */
-
-function showAsset(){
-
-const id = el("asset_id").value
-
-const a = assets.find(x=>x.asset_id === id)
-
-if(!a) return
-
-el("d_name").innerText = a.asset_name
-el("d_location").innerText = a.location
-el("d_model").innerText = a.model
-el("d_btu").innerText = a.btu
-
-}
-
-/* submit workorder */
 
 async function submitWO(){
 
-const payload = {
+const asset_id=document.getElementById("asset").value
 
-asset_id : el("asset_id").value,
-asset_name : el("d_name").innerText,
-location : el("d_location").innerText,
-model : el("d_model").innerText,
-btu : el("d_btu").innerText,
+const asset=assets.find(a=>a.asset_id==asset_id)
 
-line : el("line").value,
-problem : el("problem").value,
-priority : el("priority").value,
+const data={
 
-owner : el("owner").value,
-owner_name : el("owner_name").value,
-email : el("email").value,
-phone : el("phone").value
+asset_id:asset.asset_id,
+asset_name:asset.asset_name,
+location:asset.location,
+model:asset.model,
+btu:asset.btu,
+
+line:document.getElementById("line").value,
+problem:document.getElementById("problem").value,
+priority:document.getElementById("priority").value,
+
+owner:document.getElementById("owner").value,
+owner_name:document.getElementById("owner_name").value,
+email:document.getElementById("email").value,
+phone:document.getElementById("phone").value
 
 }
 
-await fetch(API_URL,{
+const res=await fetch(API_URL,{
+
 method:"POST",
-body:JSON.stringify(payload)
+
+body:JSON.stringify(data)
+
 })
 
-alert("Work Order Created")
+const result=await res.json()
+
+const msg=document.getElementById("success")
+
+msg.style.display="block"
+
+msg.innerHTML="✅ Work Order Created : <b>"+result.wo+"</b>"
+
+document.getElementById("problem").value=""
 
 }
 
 loadAssets()
 
 </script>
+
+</body>
+</html>
