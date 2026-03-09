@@ -1,82 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Create Work Order</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f2f4f7;
+background:#eef1f5;
 margin:0;
 }
 
 .header{
-background:#3b5c97;
+background:#3c5d94;
 color:white;
-padding:16px;
 text-align:center;
-font-size:22px;
+padding:20px;
+font-size:24px;
 font-weight:bold;
 }
 
 .container{
-width:520px;
-margin:auto;
+width:500px;
+margin:40px auto;
 background:white;
-margin-top:30px;
-padding:25px;
-border-radius:8px;
-box-shadow:0 0 10px rgba(0,0,0,0.15);
+padding:30px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
 label{
 font-weight:bold;
+display:block;
+margin-top:15px;
 }
 
-input,select,textarea{
+select,input,textarea{
 width:100%;
-padding:8px;
+padding:10px;
 margin-top:5px;
-margin-bottom:15px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
 }
 
-.assetInfo{
-background:#eee;
-padding:12px;
-border-radius:6px;
-margin-bottom:15px;
-font-size:14px;
+textarea{
+height:80px;
 }
 
 button{
-background:#3b5c97;
+margin-top:20px;
+width:100%;
+padding:12px;
+background:#3c5d94;
 color:white;
 border:none;
-padding:12px;
-width:100%;
-font-size:16px;
 border-radius:6px;
+font-size:16px;
 cursor:pointer;
 }
 
-.loading{
-text-align:center;
-font-size:14px;
-color:#555;
-margin-bottom:10px;
+button:hover{
+background:#2f4b7c;
 }
 
-.error{
-color:red;
+.asset-info{
+background:#f2f2f2;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+font-size:14px;
+}
+
+.status{
 text-align:center;
+color:red;
+margin-bottom:10px;
 }
 
 </style>
 
 </head>
+
 
 <body>
 
@@ -84,23 +92,21 @@ text-align:center;
 Create Work Order
 </div>
 
+
 <div class="container">
 
-<div class="loading" id="loading">
-กำลังโหลดข้อมูลเครื่องจักร...
-</div>
-
-<div class="error" id="error"></div>
+<div id="status" class="status"></div>
 
 <label>Asset ID</label>
 
-<select id="assetSelect" onchange="showAssetDetail()">
+<select id="asset_id">
 <option value="">-- Select Asset --</option>
 </select>
 
-<div class="assetInfo" id="assetInfo">
+<div id="asset_info" class="asset-info">
 เลือก Asset เพื่อดูรายละเอียด
 </div>
+
 
 <label>Line</label>
 
@@ -110,8 +116,11 @@ Create Work Order
 <option>Line 3</option>
 </select>
 
+
 <label>Problem</label>
+
 <textarea id="problem"></textarea>
+
 
 <label>Priority</label>
 
@@ -122,12 +131,10 @@ Create Work Order
 <option>Critical</option>
 </select>
 
+
 <label>Owner</label>
 
 <select id="owner">
-
-<option value="">-- Select Owner --</option>
-
 <option>MTN</option>
 <option>ADC</option>
 <option>FAD</option>
@@ -138,74 +145,64 @@ Create Work Order
 <option>WH</option>
 <option>HSE</option>
 <option>WHA</option>
-
 </select>
+
 
 <label>Owner Name</label>
 <input id="owner_name">
 
+
 <label>Email</label>
 <input id="email">
 
+
 <label>Phone</label>
 <input id="phone">
+
 
 <button onclick="submitWO()">Submit Work Order</button>
 
 </div>
 
+
 <script>
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
+const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
 
-let assetData = []
+
 
 async function loadAssets(){
 
-document.getElementById("loading").innerHTML =
-"กำลังโหลดข้อมูลเครื่องจักร..."
-
 try{
 
-const response =
-await fetch(API_URL + "?type=assets")
+const res=await fetch(API_URL+"?type=assets")
 
-const data =
-await response.json()
+const data=await res.json()
 
-assetData = data
+const dropdown=document.getElementById("asset_id")
 
-const select =
-document.getElementById("assetSelect")
+data.forEach(a=>{
 
-data.forEach(asset=>{
+const option=document.createElement("option")
 
-let option =
-document.createElement("option")
+option.value=a.asset_id
 
-option.value =
-asset.asset_id
+option.text=a.asset_id
 
-option.text =
-asset.asset_id
+option.dataset.name=a.asset_name
+option.dataset.location=a.location
+option.dataset.model=a.model
+option.dataset.btu=a.btu
 
-select.appendChild(option)
+dropdown.appendChild(option)
 
 })
 
-document.getElementById("loading").innerHTML =
-""
+document.getElementById("status").innerHTML=""
 
-}
-catch(error){
+}catch(e){
 
-document.getElementById("loading").innerHTML = ""
-
-document.getElementById("error").innerHTML =
-"❌ โหลด Asset ไม่ได้"
-
-console.log(error)
+document.getElementById("status").innerHTML="❌ โหลด Asset ไม่ได้"
 
 }
 
@@ -213,75 +210,51 @@ console.log(error)
 
 
 
-function showAssetDetail(){
+document.getElementById("asset_id").addEventListener("change",function(){
 
-const id =
-document.getElementById("assetSelect").value
+const selected=this.options[this.selectedIndex]
 
-const asset =
-assetData.find(a=>a.asset_id==id)
+if(!selected.value){
 
-if(!asset) return
-
-document.getElementById("assetInfo").innerHTML =
-
-`
-<b>Asset Name :</b> ${asset.asset_name}<br>
-<b>Location :</b> ${asset.location}<br>
-<b>Model :</b> ${asset.model}<br>
-<b>Cooling BTU :</b> ${asset.btu}
-`
-
-}
-
-
-
-async function submitWO(){
-
-const id =
-document.getElementById("assetSelect").value
-
-const asset =
-assetData.find(a=>a.asset_id==id)
-
-if(!asset){
-
-alert("กรุณาเลือก Asset")
+document.getElementById("asset_info").innerHTML="เลือก Asset เพื่อดูรายละเอียด"
 
 return
 
 }
 
-const payload = {
+document.getElementById("asset_info").innerHTML=
+"ชื่อเครื่อง : "+selected.dataset.name+"<br>"+
+"Location : "+selected.dataset.location+"<br>"+
+"Model : "+selected.dataset.model+"<br>"+
+"BTU : "+selected.dataset.btu
 
-asset_id:asset.asset_id,
-asset_name:asset.asset_name,
-location:asset.location,
-model:asset.model,
-btu:asset.btu,
+})
 
-line:
-document.getElementById("line").value,
 
-problem:
-document.getElementById("problem").value,
 
-priority:
-document.getElementById("priority").value,
+async function submitWO(){
 
-owner:
-document.getElementById("owner").value,
+const selected=document.getElementById("asset_id").selectedOptions[0]
 
-owner_name:
-document.getElementById("owner_name").value,
+const payload={
 
-email:
-document.getElementById("email").value,
+asset_id:selected.value,
+asset_name:selected.dataset.name,
+location:selected.dataset.location,
+model:selected.dataset.model,
+btu:selected.dataset.btu,
 
-phone:
-document.getElementById("phone").value
+line:document.getElementById("line").value,
+problem:document.getElementById("problem").value,
+priority:document.getElementById("priority").value,
+
+owner:document.getElementById("owner").value,
+owner_name:document.getElementById("owner_name").value,
+email:document.getElementById("email").value,
+phone:document.getElementById("phone").value
 
 }
+
 
 await fetch(API_URL,{
 method:"POST",
@@ -293,6 +266,7 @@ alert("Work Order Created")
 location.reload()
 
 }
+
 
 
 loadAssets()
