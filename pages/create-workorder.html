@@ -81,7 +81,6 @@ display:none;
 
 </head>
 
-
 <body>
 
 <div class="header">
@@ -92,8 +91,20 @@ Create Work Order
 
 <div class="card">
 
-<label>Asset</label>
-<select id="asset"></select>
+<label>Asset ID</label>
+<select id="asset_id"></select>
+
+<label>Asset Name</label>
+<input id="asset_name" readonly>
+
+<label>Location</label>
+<input id="location" readonly>
+
+<label>Model</label>
+<input id="model" readonly>
+
+<label>BTU</label>
+<input id="btu" readonly>
 
 <label>Production Line</label>
 <input id="line">
@@ -123,7 +134,9 @@ Create Work Order
 
 <button onclick="submitWO()">Submit Work Order</button>
 
-<div id="success" class="success"></div>
+<div id="success" class="success">
+Work Order Submitted Successfully
+</div>
 
 </div>
 </div>
@@ -136,21 +149,19 @@ const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpD
 let assets=[]
 
 
-
 async function loadAssets(){
 
 const res = await fetch(API_URL+"?type=assets")
 
 assets = await res.json()
 
-const select = document.getElementById("asset")
+const select=document.getElementById("asset_id")
 
 assets.forEach(a=>{
 
 const opt=document.createElement("option")
 
 opt.value=a.asset_id
-
 opt.text=a.asset_id+" - "+a.asset_name
 
 select.appendChild(opt)
@@ -160,10 +171,22 @@ select.appendChild(opt)
 }
 
 
+document.getElementById("asset_id").addEventListener("change",function(){
+
+const asset=assets.find(a=>a.asset_id==this.value)
+
+document.getElementById("asset_name").value=asset.asset_name
+document.getElementById("location").value=asset.location
+document.getElementById("model").value=asset.model
+document.getElementById("btu").value=asset.btu
+
+})
+
+
 
 async function submitWO(){
 
-const asset_id=document.getElementById("asset").value
+const asset_id=document.getElementById("asset_id").value
 
 const asset=assets.find(a=>a.asset_id==asset_id)
 
@@ -190,16 +213,13 @@ body:formData
 })
 
 document.getElementById("success").style.display="block"
-document.getElementById("success").innerHTML="Work Order Submitted Successfully"
 
 }
-
 
 
 loadAssets()
 
 </script>
-
 
 </body>
 </html>
