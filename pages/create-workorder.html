@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -84,6 +85,7 @@ display:none;
 
 </head>
 
+
 <body>
 
 <div class="header">
@@ -130,6 +132,7 @@ display:none;
 </div>
 </div>
 
+
 <script>
 
 const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
@@ -137,6 +140,8 @@ const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpD
 let assets=[]
 
 
+
+// LOAD ASSET FROM GOOGLE SHEET
 
 function loadAssets(){
 
@@ -174,6 +179,8 @@ select.appendChild(opt)
 
 
 
+// SUBMIT WORK ORDER
+
 async function submitWO(){
 
 const asset_id=document.getElementById("asset").value
@@ -199,29 +206,44 @@ phone:document.getElementById("phone").value
 
 }
 
-const res=await fetch(API_URL,{
+try{
+
+await fetch(API_URL,{
 
 method:"POST",
+
+mode:"no-cors",
+
+headers:{
+"Content-Type":"application/json"
+},
 
 body:JSON.stringify(data)
 
 })
 
-const result=await res.json()
+document.getElementById("success").style.display="block"
 
-const msg=document.getElementById("success")
+document.getElementById("success").innerHTML="✅ Work Order Submitted Successfully"
 
-msg.style.display="block"
+}catch(err){
 
-msg.innerHTML="✅ Work Order Created : <b>"+result.wo+"</b>"
+alert("Submit Error")
+
+console.log(err)
+
+}
 
 }
 
 
 
+// START PAGE
+
 loadAssets()
 
 </script>
+
 
 </body>
 </html>
