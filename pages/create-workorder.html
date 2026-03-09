@@ -69,10 +69,6 @@ font-weight:bold;
 cursor:pointer;
 }
 
-button:hover{
-background:#1f3f73;
-}
-
 .success{
 background:#d4edda;
 padding:12px;
@@ -141,8 +137,6 @@ let assets=[]
 
 
 
-// LOAD ASSET FROM GOOGLE SHEET
-
 function loadAssets(){
 
 const script=document.createElement("script")
@@ -179,66 +173,44 @@ select.appendChild(opt)
 
 
 
-// SUBMIT WORK ORDER
-
-async function submitWO(){
+function submitWO(){
 
 const asset_id=document.getElementById("asset").value
 
 const asset=assets.find(a=>a.asset_id==asset_id)
 
-const data={
+const formData=new FormData()
 
-asset_id:asset.asset_id,
-asset_name:asset.asset_name,
-location:asset.location,
-model:asset.model,
-btu:asset.btu,
+formData.append("asset_id",asset.asset_id)
+formData.append("asset_name",asset.asset_name)
+formData.append("location",asset.location)
+formData.append("model",asset.model)
+formData.append("btu",asset.btu)
 
-line:document.getElementById("line").value,
-problem:document.getElementById("problem").value,
-priority:document.getElementById("priority").value,
+formData.append("line",document.getElementById("line").value)
+formData.append("problem",document.getElementById("problem").value)
+formData.append("priority",document.getElementById("priority").value)
 
-owner:document.getElementById("owner").value,
-owner_name:document.getElementById("owner_name").value,
-email:document.getElementById("email").value,
-phone:document.getElementById("phone").value
+formData.append("owner",document.getElementById("owner").value)
+formData.append("owner_name",document.getElementById("owner_name").value)
+formData.append("email",document.getElementById("email").value)
+formData.append("phone",document.getElementById("phone").value)
 
-}
-
-try{
-
-await fetch(API_URL,{
-
+fetch(API_URL,{
 method:"POST",
+body:formData
+})
 
-mode:"no-cors",
+.then(()=>{
 
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify(data)
+document.getElementById("success").style.display="block"
+document.getElementById("success").innerHTML="✅ Work Order Submitted Successfully"
 
 })
 
-document.getElementById("success").style.display="block"
-
-document.getElementById("success").innerHTML="✅ Work Order Submitted Successfully"
-
-}catch(err){
-
-alert("Submit Error")
-
-console.log(err)
-
-}
-
 }
 
 
-
-// START PAGE
 
 loadAssets()
 
