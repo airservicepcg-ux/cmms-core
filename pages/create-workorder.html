@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,10 +9,9 @@
 <style>
 
 body{
-font-family: Arial;
+font-family:Arial;
 background:#f4f6f9;
 margin:0;
-padding:0;
 }
 
 .header{
@@ -38,12 +37,12 @@ box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
 label{
-font-weight:bold;
-margin-top:10px;
 display:block;
+margin-top:12px;
+font-weight:bold;
 }
 
-select,input,textarea{
+input,select,textarea{
 width:100%;
 padding:10px;
 margin-top:5px;
@@ -124,9 +123,7 @@ display:none;
 <label>Phone</label>
 <input id="phone">
 
-<button onclick="submitWO()">
-Submit Work Order
-</button>
+<button onclick="submitWO()">Submit Work Order</button>
 
 <div id="success" class="success"></div>
 
@@ -135,22 +132,38 @@ Submit Work Order
 
 <script>
 
-const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AY5xjrQ0Nklb7pOLdeC6dT3ZxmfpaEOFWplGrboWAmNzEreaGgc-c9vRudPvYXRnVemp...&lib=..."
+const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
 
 let assets=[]
 
-async function loadAssets(){
 
-const res=await fetch(API_URL+"?type=assets")
-assets=await res.json()
+
+function loadAssets(){
+
+const script=document.createElement("script")
+
+script.src=API_URL+"?type=assets&callback=loadAssetResult"
+
+document.body.appendChild(script)
+
+}
+
+
+
+function loadAssetResult(data){
+
+assets=data
 
 const select=document.getElementById("asset")
 
-assets.forEach(a=>{
+select.innerHTML=""
+
+data.forEach(a=>{
 
 const opt=document.createElement("option")
 
 opt.value=a.asset_id
+
 opt.text=a.asset_id+" - "+a.asset_name
 
 select.appendChild(opt)
@@ -158,6 +171,8 @@ select.appendChild(opt)
 })
 
 }
+
+
 
 async function submitWO(){
 
@@ -200,9 +215,9 @@ msg.style.display="block"
 
 msg.innerHTML="✅ Work Order Created : <b>"+result.wo+"</b>"
 
-document.getElementById("problem").value=""
-
 }
+
+
 
 loadAssets()
 
