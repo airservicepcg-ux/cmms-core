@@ -1,260 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Create Work Order</title>
-
-<style>
-
-body{
-font-family:Arial;
-background:#eef1f5;
-margin:0;
-}
-
-.header{
-background:#3c5d94;
-color:white;
-text-align:center;
-padding:20px;
-font-size:24px;
-font-weight:bold;
-}
-
-.container{
-width:500px;
-margin:40px auto;
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-}
-
-label{
-font-weight:bold;
-display:block;
-margin-top:15px;
-}
-
-select,input,textarea{
-width:100%;
-padding:10px;
-margin-top:5px;
-border-radius:6px;
-border:1px solid #ccc;
-font-size:14px;
-}
-
-textarea{
-height:80px;
-}
-
-button{
-margin-top:20px;
-width:100%;
-padding:12px;
-background:#3c5d94;
-color:white;
-border:none;
-border-radius:6px;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-background:#2f4b7c;
-}
-
-.asset-info{
-background:#f2f2f2;
-padding:10px;
-margin-top:10px;
-border-radius:6px;
-font-size:14px;
-}
-
-.status{
-text-align:center;
-color:red;
-margin-bottom:10px;
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div class="header">
-Create Work Order
-</div>
-
-
-<div class="container">
-
-<div id="status" class="status"></div>
-
-<label>Asset ID</label>
-
-<select id="asset_id">
-<option value="">-- Select Asset --</option>
-</select>
-
-<div id="asset_info" class="asset-info">
-เลือก Asset เพื่อดูรายละเอียด
-</div>
-
-
-<label>Line</label>
-
-<select id="line">
-<option>Line 1</option>
-<option>Line 2</option>
-<option>Line 3</option>
-</select>
-
-
-<label>Problem</label>
-
-<textarea id="problem"></textarea>
-
-
-<label>Priority</label>
-
-<select id="priority">
-<option>Low</option>
-<option>Medium</option>
-<option>High</option>
-<option>Critical</option>
-</select>
-
-
-<label>Owner</label>
-
-<select id="owner">
-<option>MTN</option>
-<option>ADC</option>
-<option>FAD</option>
-<option>CTC</option>
-<option>PRD</option>
-<option>QC</option>
-<option>QA</option>
-<option>WH</option>
-<option>HSE</option>
-<option>WHA</option>
-</select>
-
-
-<label>Owner Name</label>
-<input id="owner_name">
-
-
-<label>Email</label>
-<input id="email">
-
-
-<label>Phone</label>
-<input id="phone">
-
-
-<button onclick="submitWO()">Submit Work Order</button>
-
-</div>
-
-
 <script>
 
-const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
+const API_URL = "https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
 
+const el = id => document.getElementById(id)
 
+let assets = []
+
+/* โหลด asset */
 
 async function loadAssets(){
 
 try{
 
-const res=await fetch(API_URL+"?type=assets")
+const res = await fetch(API_URL + "?type=assets")
 
-const data=await res.json()
+const data = await res.json()
 
-const dropdown=document.getElementById("asset_id")
+assets = data
+
+const select = el("asset_id")
+
+select.innerHTML = `<option value="">-- Select Asset --</option>`
 
 data.forEach(a=>{
 
-const option=document.createElement("option")
+const option = document.createElement("option")
 
-option.value=a.asset_id
+option.value = a.asset_id
+option.textContent = a.asset_id
 
-option.text=a.asset_id
-
-option.dataset.name=a.asset_name
-option.dataset.location=a.location
-option.dataset.model=a.model
-option.dataset.btu=a.btu
-
-dropdown.appendChild(option)
+select.appendChild(option)
 
 })
 
-document.getElementById("status").innerHTML=""
+}catch(err){
 
-}catch(e){
+console.error(err)
 
-document.getElementById("status").innerHTML="❌ โหลด Asset ไม่ได้"
-
-}
+document.getElementById("status").innerHTML = "❌ โหลด Asset ไม่ได้"
 
 }
 
+}
 
+/* แสดงรายละเอียด asset */
 
-document.getElementById("asset_id").addEventListener("change",function(){
+function showAsset(){
 
-const selected=this.options[this.selectedIndex]
+const id = el("asset_id").value
 
-if(!selected.value){
+const a = assets.find(x=>x.asset_id === id)
 
-document.getElementById("asset_info").innerHTML="เลือก Asset เพื่อดูรายละเอียด"
+if(!a) return
 
-return
+el("d_name").innerText = a.asset_name
+el("d_location").innerText = a.location
+el("d_model").innerText = a.model
+el("d_btu").innerText = a.btu
 
 }
 
-document.getElementById("asset_info").innerHTML=
-"ชื่อเครื่อง : "+selected.dataset.name+"<br>"+
-"Location : "+selected.dataset.location+"<br>"+
-"Model : "+selected.dataset.model+"<br>"+
-"BTU : "+selected.dataset.btu
-
-})
-
-
+/* submit workorder */
 
 async function submitWO(){
 
-const selected=document.getElementById("asset_id").selectedOptions[0]
+const payload = {
 
-const payload={
+asset_id : el("asset_id").value,
+asset_name : el("d_name").innerText,
+location : el("d_location").innerText,
+model : el("d_model").innerText,
+btu : el("d_btu").innerText,
 
-asset_id:selected.value,
-asset_name:selected.dataset.name,
-location:selected.dataset.location,
-model:selected.dataset.model,
-btu:selected.dataset.btu,
+line : el("line").value,
+problem : el("problem").value,
+priority : el("priority").value,
 
-line:document.getElementById("line").value,
-problem:document.getElementById("problem").value,
-priority:document.getElementById("priority").value,
-
-owner:document.getElementById("owner").value,
-owner_name:document.getElementById("owner_name").value,
-email:document.getElementById("email").value,
-phone:document.getElementById("phone").value
+owner : el("owner").value,
+owner_name : el("owner_name").value,
+email : el("email").value,
+phone : el("phone").value
 
 }
-
 
 await fetch(API_URL,{
 method:"POST",
@@ -263,15 +90,8 @@ body:JSON.stringify(payload)
 
 alert("Work Order Created")
 
-location.reload()
-
 }
-
-
 
 loadAssets()
 
 </script>
-
-</body>
-</html>
