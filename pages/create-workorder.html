@@ -69,40 +69,46 @@ font-weight:bold;
 cursor:pointer;
 }
 
-.success{
-background:#d4edda;
-padding:12px;
-border-radius:6px;
-margin-top:15px;
-display:none;
-}
-
 </style>
 
 </head>
 
-
 <body>
 
 <div class="header">
-🔧 Create Work Order
+Create Work Order
 </div>
 
 <div class="container">
 
 <div class="card">
 
-<label>Asset</label>
-<select id="asset"></select>
+<form method="POST"
+action="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec">
 
-<label>Production Line</label>
-<input id="line">
+<label>Asset ID</label>
+<input name="asset_id" value="AC-010">
 
-<label>Problem Description</label>
-<textarea id="problem"></textarea>
+<label>Asset Name</label>
+<input name="asset_name" value="Air Conditioner 010">
+
+<label>Location</label>
+<input name="location" value="WHA05">
+
+<label>Model</label>
+<input name="model" value="HSU-18VRA">
+
+<label>BTU</label>
+<input name="btu" value="18000">
+
+<label>Line</label>
+<input name="line">
+
+<label>Problem</label>
+<textarea name="problem"></textarea>
 
 <label>Priority</label>
-<select id="priority">
+<select name="priority">
 <option>LOW</option>
 <option>MEDIUM</option>
 <option>HIGH</option>
@@ -110,112 +116,25 @@ display:none;
 </select>
 
 <label>Department</label>
-<input id="owner">
+<input name="owner">
 
 <label>Requester Name</label>
-<input id="owner_name">
+<input name="owner_name">
 
 <label>Email</label>
-<input id="email">
+<input name="email">
 
 <label>Phone</label>
-<input id="phone">
+<input name="phone">
 
-<button onclick="submitWO()">Submit Work Order</button>
+<button type="submit">
+Submit Work Order
+</button>
 
-<div id="success" class="success"></div>
+</form>
 
 </div>
 </div>
-
-
-<script>
-
-const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
-
-let assets=[]
-
-
-
-function loadAssets(){
-
-const script=document.createElement("script")
-
-script.src=API_URL+"?type=assets&callback=loadAssetResult"
-
-document.body.appendChild(script)
-
-}
-
-
-
-function loadAssetResult(data){
-
-assets=data
-
-const select=document.getElementById("asset")
-
-select.innerHTML=""
-
-data.forEach(a=>{
-
-const opt=document.createElement("option")
-
-opt.value=a.asset_id
-
-opt.text=a.asset_id+" - "+a.asset_name
-
-select.appendChild(opt)
-
-})
-
-}
-
-
-
-function submitWO(){
-
-const asset_id=document.getElementById("asset").value
-
-const asset=assets.find(a=>a.asset_id==asset_id)
-
-const formData=new FormData()
-
-formData.append("asset_id",asset.asset_id)
-formData.append("asset_name",asset.asset_name)
-formData.append("location",asset.location)
-formData.append("model",asset.model)
-formData.append("btu",asset.btu)
-
-formData.append("line",document.getElementById("line").value)
-formData.append("problem",document.getElementById("problem").value)
-formData.append("priority",document.getElementById("priority").value)
-
-formData.append("owner",document.getElementById("owner").value)
-formData.append("owner_name",document.getElementById("owner_name").value)
-formData.append("email",document.getElementById("email").value)
-formData.append("phone",document.getElementById("phone").value)
-
-fetch(API_URL,{
-method:"POST",
-body:formData
-})
-
-.then(()=>{
-
-document.getElementById("success").style.display="block"
-document.getElementById("success").innerHTML="✅ Work Order Submitted Successfully"
-
-})
-
-}
-
-
-
-loadAssets()
-
-</script>
-
 
 </body>
 </html>
