@@ -16,7 +16,7 @@ padding:20px;
 header{
 font-size:20px;
 font-weight:bold;
-margin-bottom:15px;
+margin-bottom:20px;
 }
 
 .card{
@@ -63,6 +63,7 @@ background:#0f2a66;
 .loading{
 font-size:13px;
 color:#777;
+margin-top:4px;
 }
 
 </style>
@@ -134,9 +135,8 @@ async function loadAssets(){
 
 try{
 
-const res=await fetch(API_URL+"?type=assets")
-
-assets=await res.json()
+const res = await fetch(API_URL+"?type=assets")
+assets = await res.json()
 
 document.getElementById("loadingAssets").style.display="none"
 
@@ -153,13 +153,11 @@ document.getElementById("loadingAssets").innerText="Cannot load assets"
 function renderAssets(list){
 
 const select=document.getElementById("asset_id")
-
 select.innerHTML=""
 
 list.forEach(a=>{
 
 const opt=document.createElement("option")
-
 opt.value=a.asset_id
 opt.text=a.asset_id+" - "+a.asset_name
 
