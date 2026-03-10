@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CMMS Work Orders</title>
+<title>Create Work Order</title>
 
 <style>
 
 body{
-font-family:Arial, sans-serif;
+font-family:Arial;
 background:#f5f7fb;
 margin:0;
 padding:20px;
@@ -19,41 +19,50 @@ font-weight:bold;
 margin-bottom:15px;
 }
 
-/* search box */
+.card{
+background:white;
+padding:20px;
+border-radius:8px;
+max-width:600px;
+margin:auto;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
 
-.search{
+label{
+font-weight:bold;
+display:block;
+margin-top:12px;
+}
+
+input,select,textarea{
 width:100%;
 padding:10px;
-margin-bottom:20px;
+margin-top:5px;
 border-radius:6px;
 border:1px solid #ccc;
 }
 
-/* empty state */
-
-.empty{
-text-align:center;
-color:#777;
-margin-top:60px;
+textarea{
+height:90px;
 }
 
-/* create button */
-
-.btn-add{
-position:fixed;
-bottom:30px;
-right:30px;
+button{
+margin-top:20px;
 background:#163a8f;
-color:#fff;
+color:white;
 border:none;
-border-radius:30px;
-padding:14px 22px;
-font-size:16px;
+border-radius:6px;
+padding:12px;
 cursor:pointer;
 }
 
-.btn-add:hover{
+button:hover{
 background:#0f2a66;
+}
+
+.loading{
+font-size:13px;
+color:#777;
 }
 
 </style>
@@ -62,30 +71,164 @@ background:#0f2a66;
 
 <body>
 
-<header>Work Orders</header>
+<header>Create Work Order</header>
 
-<input class="search" placeholder="Search work orders">
+<div class="card">
 
-<div class="empty">
-<p>Click the button to create a new Work Order</p>
+<label>Search Asset</label>
+<input id="searchAsset" placeholder="Type AC-001">
+<div id="loadingAssets" class="loading">Loading assets...</div>
+
+<label>Asset ID</label>
+<select id="asset_id"></select>
+
+<label>Asset Name</label>
+<input id="asset_name" readonly>
+
+<label>Location</label>
+<input id="location" readonly>
+
+<label>Model</label>
+<input id="model" readonly>
+
+<label>BTU</label>
+<input id="btu" readonly>
+
+<label>Production Line</label>
+<input id="line">
+
+<label>Problem Description</label>
+<textarea id="problem"></textarea>
+
+<label>Priority</label>
+<select id="priority">
+<option>LOW</option>
+<option>MEDIUM</option>
+<option>HIGH</option>
+<option>CRITICAL</option>
+</select>
+
+<label>Department</label>
+<input id="owner">
+
+<label>Requester Name</label>
+<input id="owner_name">
+
+<label>Email</label>
+<input id="email">
+
+<label>Phone</label>
+<input id="phone">
+
+<button onclick="submitWO()">Submit Work Order</button>
+
 </div>
-
-<button class="btn-add" onclick="createWO()">
-+ Create Work Order
-</button>
 
 <script>
 
-/*
-Navigate to Create Work Order Page
-This path matches GitHub Pages structure
-*/
+const API_URL="https://script.google.com/macros/s/AKfycbyI-vstY111orFbh_j3aFYvpDZh3xVc-D4fStsePPkH5JIrh605XqPE-HS8tcWYZ1zL/exec"
 
-function createWO(){
+let assets=[]
 
-window.location.href="../pages/create-workorder.html"
+async function loadAssets(){
+
+try{
+
+const res=await fetch(API_URL+"?type=assets")
+
+assets=await res.json()
+
+document.getElementById("loadingAssets").style.display="none"
+
+renderAssets(assets)
+
+}catch(err){
+
+document.getElementById("loadingAssets").innerText="Cannot load assets"
 
 }
+
+}
+
+function renderAssets(list){
+
+const select=document.getElementById("asset_id")
+
+select.innerHTML=""
+
+list.forEach(a=>{
+
+const opt=document.createElement("option")
+
+opt.value=a.asset_id
+opt.text=a.asset_id+" - "+a.asset_name
+
+select.appendChild(opt)
+
+})
+
+}
+
+document.getElementById("searchAsset").addEventListener("input",function(){
+
+const keyword=this.value.toLowerCase()
+
+const filtered=assets.filter(a=>
+
+a.asset_id.toLowerCase().includes(keyword) ||
+a.asset_name.toLowerCase().includes(keyword)
+
+)
+
+renderAssets(filtered)
+
+})
+
+document.getElementById("asset_id").addEventListener("change",function(){
+
+const asset=assets.find(a=>a.asset_id==this.value)
+
+if(!asset) return
+
+document.getElementById("asset_name").value=asset.asset_name
+document.getElementById("location").value=asset.location
+document.getElementById("model").value=asset.model
+document.getElementById("btu").value=asset.btu
+
+})
+
+async function submitWO(){
+
+const asset_id=document.getElementById("asset_id").value
+const asset=assets.find(a=>a.asset_id==asset_id)
+
+const data=new URLSearchParams()
+
+data.append("asset_id",asset.asset_id)
+data.append("asset_name",asset.asset_name)
+data.append("location",asset.location)
+data.append("model",asset.model)
+data.append("btu",asset.btu)
+
+data.append("line",document.getElementById("line").value)
+data.append("problem",document.getElementById("problem").value)
+data.append("priority",document.getElementById("priority").value)
+
+data.append("owner",document.getElementById("owner").value)
+data.append("owner_name",document.getElementById("owner_name").value)
+data.append("email",document.getElementById("email").value)
+data.append("phone",document.getElementById("phone").value)
+
+await fetch(API_URL,{
+method:"POST",
+body:data
+})
+
+alert("Work Order Created")
+
+}
+
+loadAssets()
 
 </script>
 
