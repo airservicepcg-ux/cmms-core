@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <title>Create Work Order</title>
@@ -7,7 +8,7 @@
 <style>
 
 body{
-font-family:Arial;
+font-family: Arial;
 background:#f5f7fb;
 padding:20px;
 }
@@ -27,7 +28,7 @@ margin-top:10px;
 display:block;
 }
 
-input,select{
+input,select,textarea{
 width:100%;
 padding:10px;
 margin-top:5px;
@@ -35,8 +36,20 @@ border:1px solid #ccc;
 border-radius:6px;
 }
 
+button{
+margin-top:20px;
+width:100%;
+padding:12px;
+background:#2b6cff;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
 </style>
 </head>
+
 
 <body>
 
@@ -48,10 +61,10 @@ border-radius:6px;
 <input id="search" placeholder="Type AC-001">
 
 <label>Asset ID</label>
-<select id="asset_id"></select>
+<select id="assetID"></select>
 
 <label>Asset Name</label>
-<input id="asset_name" readonly>
+<input id="assetName" readonly>
 
 <label>Location</label>
 <input id="location" readonly>
@@ -62,34 +75,75 @@ border-radius:6px;
 <label>BTU</label>
 <input id="btu" readonly>
 
+
+<label>Problem</label>
+<textarea id="problem"></textarea>
+
+
+<label>Priority</label>
+<select id="priority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+
+<label>Owner</label>
+<select id="owner">
+<option>MTN</option>
+<option>HSE</option>
+<option>UTILITY</option>
+</select>
+
+
+<label>Owner Name</label>
+<input id="ownerName">
+
+
+<label>Email</label>
+<input id="email">
+
+
+<label>Phone</label>
+<input id="phone">
+
+
+<button onclick="submitWorkOrder()">Submit Work Order</button>
+
 </div>
+
+
 
 <script>
 
-const API_URL="https://script.googleusercontent.com/macros/echo?user_content_key=AY5xjrRhnLoIR36F3xhSgiOvJXji7QC86G0w5eXBux61n4Hjxpp26R0iL23501w-zW067wND..."  // ใส่ URL เต็มที่คุณเปิด JSON ได้
+const ASSET_API = "ใส่ URL GAS ที่ใช้โหลด Asset JSON"
+const WO_API = "https://script.google.com/macros/s/AKfycby8YXx1XAPZLd8pmLc5umMSduj9Htnzt4S6G_MCBXPaOt5lrJ_S1FDPiwfYRTF5iRJ-/exec"
 
-let assets=[]
+let assets = []
+
 
 async function loadAssets(){
 
-const res = await fetch(API_URL)
+const res = await fetch(ASSET_API)
 assets = await res.json()
 
 renderAssets(assets)
 
 }
 
+
+
 function renderAssets(list){
 
-const select=document.getElementById("asset_id")
-select.innerHTML=""
+const select = document.getElementById("assetID")
+select.innerHTML = ""
 
 list.forEach(a=>{
 
-const opt=document.createElement("option")
+const opt = document.createElement("option")
 
-opt.value=a.asset_id
-opt.text=a.asset_id+" - "+a.asset_name
+opt.value = a.asset_id
+opt.text = a.asset_id + " - " + a.asset_name
 
 select.appendChild(opt)
 
@@ -97,11 +151,13 @@ select.appendChild(opt)
 
 }
 
+
+
 document.getElementById("search").addEventListener("input",function(){
 
-const k=this.value.toLowerCase()
+const k = this.value.toLowerCase()
 
-const filtered=assets.filter(a=>
+const filtered = assets.filter(a =>
 a.asset_id.toLowerCase().includes(k) ||
 a.asset_name.toLowerCase().includes(k)
 )
@@ -110,22 +166,66 @@ renderAssets(filtered)
 
 })
 
-document.getElementById("asset_id").addEventListener("change",function(){
 
-const asset=assets.find(a=>a.asset_id==this.value)
+
+document.getElementById("assetID").addEventListener("change",function(){
+
+const asset = assets.find(a => a.asset_id == this.value)
 
 if(!asset) return
 
-document.getElementById("asset_name").value=asset.asset_name
-document.getElementById("location").value=asset.location
-document.getElementById("model").value=asset.model
-document.getElementById("btu").value=asset.btu
+document.getElementById("assetName").value = asset.asset_name
+document.getElementById("location").value = asset.location
+document.getElementById("model").value = asset.model
+document.getElementById("btu").value = asset.btu
 
 })
+
+
+
+async function submitWorkOrder(){
+
+const data = new FormData()
+
+data.append("assetID", document.getElementById("assetID").value)
+data.append("assetName", document.getElementById("assetName").value)
+data.append("location", document.getElementById("location").value)
+data.append("model", document.getElementById("model").value)
+data.append("serial","")
+data.append("btu", document.getElementById("btu").value)
+data.append("problem", document.getElementById("problem").value)
+data.append("priority", document.getElementById("priority").value)
+data.append("owner", document.getElementById("owner").value)
+data.append("ownerName", document.getElementById("ownerName").value)
+data.append("email", document.getElementById("email").value)
+data.append("phone", document.getElementById("phone").value)
+
+
+const res = await fetch(WO_API,{
+method:"POST",
+body:data
+})
+
+const result = await res.json()
+
+if(result.status === "success"){
+
+alert("Work Order Created : " + result.wo)
+
+}else{
+
+alert("Error : " + result.message)
+
+}
+
+}
+
+
 
 loadAssets()
 
 </script>
+
 
 </body>
 </html>
