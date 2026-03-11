@@ -50,7 +50,6 @@ cursor:pointer;
 </style>
 </head>
 
-
 <body>
 
 <h2>Create Work Order</h2>
@@ -72,13 +71,14 @@ cursor:pointer;
 <label>Model</label>
 <input id="model" readonly>
 
+<label>Serial Number</label>
+<input id="serial" readonly>
+
 <label>BTU</label>
 <input id="btu" readonly>
 
-
 <label>Problem</label>
 <textarea id="problem"></textarea>
-
 
 <label>Priority</label>
 <select id="priority">
@@ -87,7 +87,6 @@ cursor:pointer;
 <option>High</option>
 </select>
 
-
 <label>Owner</label>
 <select id="owner">
 <option>MTN</option>
@@ -95,18 +94,20 @@ cursor:pointer;
 <option>UTILITY</option>
 </select>
 
-
 <label>Owner Name</label>
 <input id="ownerName">
-
 
 <label>Email</label>
 <input id="email">
 
-
 <label>Phone</label>
 <input id="phone">
 
+<label>Photo 1</label>
+<input type="file" id="photo1" accept="image/*" capture="environment">
+
+<label>Photo 2</label>
+<input type="file" id="photo2" accept="image/*" capture="environment">
 
 <button onclick="submitWorkOrder()">Submit Work Order</button>
 
@@ -115,12 +116,11 @@ cursor:pointer;
 
 
 <script>
-
-const ASSET_API = "ใส่ URL GAS ที่ใช้โหลด Asset JSON"
+  
+const ASSET_API = "https://script.google.com/macros/s/AKfycby8YXx1XAPZLd8pmLc5umMSduj9Htnzt4S6G_MCBXPaOt5lrJ_S1FDPiwfYRTF5iRJ-/exec?action=assets"
 const WO_API = "https://script.google.com/macros/s/AKfycby8YXx1XAPZLd8pmLc5umMSduj9Htnzt4S6G_MCBXPaOt5lrJ_S1FDPiwfYRTF5iRJ-/exec"
 
 let assets = []
-
 
 async function loadAssets(){
 
@@ -130,8 +130,6 @@ assets = await res.json()
 renderAssets(assets)
 
 }
-
-
 
 function renderAssets(list){
 
@@ -151,8 +149,6 @@ select.appendChild(opt)
 
 }
 
-
-
 document.getElementById("search").addEventListener("input",function(){
 
 const k = this.value.toLowerCase()
@@ -166,8 +162,6 @@ renderAssets(filtered)
 
 })
 
-
-
 document.getElementById("assetID").addEventListener("change",function(){
 
 const asset = assets.find(a => a.asset_id == this.value)
@@ -177,11 +171,10 @@ if(!asset) return
 document.getElementById("assetName").value = asset.asset_name
 document.getElementById("location").value = asset.location
 document.getElementById("model").value = asset.model
-document.getElementById("btu").value = asset.btu
+document.getElementById("serial").value = asset.serial_number
+document.getElementById("btu").value = asset.cooling_btu
 
 })
-
-
 
 async function submitWorkOrder(){
 
@@ -191,7 +184,7 @@ data.append("assetID", document.getElementById("assetID").value)
 data.append("assetName", document.getElementById("assetName").value)
 data.append("location", document.getElementById("location").value)
 data.append("model", document.getElementById("model").value)
-data.append("serial","")
+data.append("serial", document.getElementById("serial").value)
 data.append("btu", document.getElementById("btu").value)
 data.append("problem", document.getElementById("problem").value)
 data.append("priority", document.getElementById("priority").value)
@@ -200,6 +193,11 @@ data.append("ownerName", document.getElementById("ownerName").value)
 data.append("email", document.getElementById("email").value)
 data.append("phone", document.getElementById("phone").value)
 
+const photo1 = document.getElementById("photo1").files[0]
+const photo2 = document.getElementById("photo2").files[0]
+
+if(photo1) data.append("photo1",photo1.name)
+if(photo2) data.append("photo2",photo2.name)
 
 const res = await fetch(WO_API,{
 method:"POST",
@@ -209,23 +207,16 @@ body:data
 const result = await res.json()
 
 if(result.status === "success"){
-
 alert("Work Order Created : " + result.wo)
-
 }else{
-
 alert("Error : " + result.message)
-
 }
 
 }
-
-
 
 loadAssets()
 
 </script>
-
 
 </body>
 </html>
